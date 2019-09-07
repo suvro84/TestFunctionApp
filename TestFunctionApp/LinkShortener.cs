@@ -16,6 +16,8 @@ using Microsoft.Azure.Management.DataLake.Store;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Rest.Azure.Authentication;
 using System.Net.Http.Headers;
+using Microsoft.Rest;
+using System.IO;
 
 namespace TestFunctionApp
 {
@@ -84,8 +86,8 @@ namespace TestFunctionApp
                 //string adlsAccountName = ConfigurationManager.AppSettings["adlsAccountName"];
                 string clientId = "67d00f97-4c4d-417c-8e3b-748fcf9e69f5";
                 string tenantId = "f7240cee-bd57-4eeb-9bfb-6815bb83b3b4";
-                string clientSecretId = "Mu6qmY-4?o43:TjAK+8F1bCXiM+T@G?N";
-                string adlsAccountName = "ADLS App";
+                string clientSecretId = "D/M2.0u[yNO=KQ4841FnomZmD:aP+Phy";
+                string adlsAccountName = "testdlapp";
 
                 SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
 
@@ -105,10 +107,17 @@ namespace TestFunctionApp
                 string csv = Extensions.GetCSV(lstData);
                 //CSVHelper.ExportCSV(csv, filename);
 
-                //byte[] filebytes = Encoding.UTF8.GetBytes(csv);
-
                
-                var destination = "destination.txt";
+
+                byte[] filebytes = Encoding.UTF8.GetBytes(csv);
+                MemoryStream stream = new MemoryStream(filebytes);
+
+                StreamReader reader = new StreamReader(stream);
+                Console.WriteLine(reader.ReadToEnd());
+                //File.WriteAllText("G:\\AzureApps\\TestFunctionApp\\TestFunctionApp\\TestFunctionApp\\App_Data", csv.ToString());
+
+
+                var destination = "/Upload/destination.txt";
 
 
                 //// FINISHED
@@ -124,7 +133,6 @@ namespace TestFunctionApp
                 result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = "export_" + DateTime.Now + ".csv" };
 
                 adlsFileSystemClient.FileSystem.UploadFile(adlsAccountName, source, destination, 1, false, true);
-
                 return result;
 
                 //return new FileContentResult(filebytes, "application/octet-stream")
@@ -148,8 +156,7 @@ namespace TestFunctionApp
         }
 
 
-
-
+       
         public class Customer
         {
             public int Id { set; get; }
